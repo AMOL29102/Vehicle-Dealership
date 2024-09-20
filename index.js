@@ -8,8 +8,9 @@ const path = require("path");
 
 
 //routers
-const Imagerouter=require("../Backend/routes/image.js")
-const DetailsRouter  = require("./routes/details");
+const HomeRoute = require("./routes/home.js")
+const Imageroute=require("../Backend/routes/image.js")
+const DetailsRoute  = require("./routes/details.js");
 
 app.set("view engine","ejs");
 app.use(express.json()); 
@@ -20,11 +21,10 @@ app.set('views',path.resolve("./views"));
 app.use(logResReq("logs.txt"));
 
 // Using Routes
-app.use("/upload",Imagerouter);
-// app.use("/details",);
-app.get("/",async(req,res)=>{
-    res.send("yamraj !!")
-})
+app.use("/",HomeRoute)
+app.use("/upload",Imageroute);
+ app.use("/details",DetailsRoute);
+
 
 // Correct `app.listen` without req and res parameters
 app.listen(port, () => {
