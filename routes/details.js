@@ -3,10 +3,10 @@ const handleCarDetails = require("../controllers/cardetails");
 
 router = express.Router();
 
-router.get("/details",(req,res)=>{
-    res.render("carDetails");
+router.get("/",(req,res)=>{
+    return res.render("carDetails");
 });
 
-router.post("/details",handleCarDetails);
+router.post("/",handleCarDetails);
 
 module.exports = router;

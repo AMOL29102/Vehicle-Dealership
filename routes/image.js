@@ -2,12 +2,12 @@ const express = require("express");
 const handleImageUpload = require("../controllers/image");
 const upload = require("../middlewares/multer.middleware");
 
-router = express.Router();
+Imagerouter = express.Router();
 
-router.get("/upload",(req,res)=>{
-    res.render("upload");
+Imagerouter.get("/",(req,res)=>{
+    return res.render("upload");
 })
 
-router.post("/upload",upload.array("images[]",10),handleImageUpload);
+Imagerouter.post("/",upload.array("images[]",10),handleImageUpload);
 
-module.exports = router;
+module.exports = Imagerouter;
