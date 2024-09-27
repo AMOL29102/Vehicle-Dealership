@@ -1,14 +1,19 @@
-  import { useState } from 'react'
-  import './App.css'
-  import {
-    createBrowserRouter,
-    RouterProvider,
-  } from "react-router-dom";
-import AdminForm from './pages/AdminForm';
+import { useState } from 'react'
+import './App.css'
+import {
+  createBrowserRouter,
+  RouterProvider,
+} from "react-router-dom";
 import Layout from './components/Layout';
 import Landing from './pages/Landing';
 import CarDetails from './pages/CarDetails';
 import Login from './pages/Login';
+import CarDetailsForm  from "./pages/CarDetailsForm"
+import DeleteCarDetails from './pages/DeleteCarDetails';
+import Dashboard from './pages/Dashboard';
+import { ToastContainer } from 'react-toastify'; // Import ToastContainer
+import 'react-toastify/dist/ReactToastify.css';
+import CustomerEnquiry from './pages/CustomerEnquiry';
   const router = createBrowserRouter([
     {
       path:"/",
@@ -36,23 +41,50 @@ import Login from './pages/Login';
       )
     },
     {
-      path: "*",
-      element: () => <h1>Page Not Found</h1>  // 404 page component
-    },
-    {
-      path:"/adminform",
+      path:"/dashboard",
       element:(
         <Layout>
-          <AdminForm/>
+          <Dashboard/>
         </Layout>
       )
+    },
+    {
+      path:"/dashboard/carDetailsForm",
+      element:(
+        <Layout>
+          <CarDetailsForm/>
+        </Layout>
+      )
+    },
+    {
+      path:"/dashboard/DeleteCarDetails",
+      element:(
+        <Layout>
+          <DeleteCarDetails/>
+        </Layout>
+      )
+    },
+    {
+      path:"/dashboard/customerEnquiry",
+      element:(
+        <Layout>
+          <CustomerEnquiry/>
+        </Layout>
+      )
+    },
+    {
+      path: "*",
+      element: () => <h1>Page Not Found</h1>
     }
   ])
 
   function App() {
       return (
       <>
-        <RouterProvider router={router} />
+        <>
+        <ToastContainer />
+          <RouterProvider router={router} />
+        </>
       </>
     )
   }

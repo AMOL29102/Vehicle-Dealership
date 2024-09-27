@@ -1,17 +1,40 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
+import axios from 'axios';
 
 function CarDetails() {
   const params = useParams();
+  const [carData, setCarData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchCarDetails = async () => {
+      try {
+        const response = await axios.get(`http://localhost:8000/car/${params.id}`);
+        setCarData(response.data); 
+        setLoading(false);
+      } catch (err) {
+        console.error('Error fetching car details:', err);
+        setError('Error fetching car details');
+        setLoading(false);
+      }
+    };
+
+    fetchCarDetails();
+  }, [params.id]);
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>{error}</p>;
 
   return (
     <div className="container mx-auto">
       <main className="py-10">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="bg-white shadow-md rounded-md p-4">
-            <h1 className="text-2xl font-bold mb-4">Car {params.id}</h1>
+            <h1 className="text-2xl font-bold mb-4">{carData.car.carcompany} {carData.car.carname}</h1>
             <Carousel
               showArrows={true}
               autoPlay={true}
@@ -19,64 +42,80 @@ function CarDetails() {
               showThumbs={false}
               className="rounded-t-lg"
             >
-              <div> 
-                <img
-                  src={`../../../Assets/Images/car${params.id}.jpeg`}
-                  alt="Scorpio"
-                  className="w-full h-auto rounded-t-lg"
-                />
-              </div>
-              <div>
-                <img
-                  src={`../../../Assets/Images/car${params.id}.jpeg`}
-                  alt="Suzuki Fronx"
-                  className="w-full h-auto rounded-t-lg"
-                />
-              </div>
-              <div>
-                <img
-                  src={`../../../Assets/Images/car${params.id}.jpeg`}
-                  alt="Suzuki Fronx"
-                  className="w-full h-auto rounded-t-lg"
-                />
-              </div>
+              {carData.images.map((image, index) => (
+                <div key={index}>
+                  <img
+                    src={image}  // Correctly use the image URL
+                    alt={`Car ${carData.car.carname}`}
+                    className="w-full h-auto rounded-t-lg"
+                  />
+                </div>
+              ))}
             </Carousel>
           </div>
 
           <div className="bg-white shadow-md rounded-md p-4">
-            <h2 className="text-2xl font-bold mb-4">Suzuki Fronx</h2>
-            <h3 className="text-lg font-semibold mb-2">Common Details</h3>
-            <h3 className="text-lg font-semibold mb-2">Specifications:</h3>
+            <h2 className="text-2xl font-bold mb-4">{carData.car.carname} Details</h2>
+            <h3 className="text-lg font-semibold mb-2">Car Information</h3>
             <ul>
               <li className="flex justify-between items-center mb-2">
-                <span className="font-semibold">Field1</span>
-                <span>Value1</span>
+                <span className="font-semibold">Car Name:</span>
+                <span>{carData.car.carname}</span>
               </li>
               <li className="flex justify-between items-center mb-2">
-                <span className="font-semibold">Field2</span>
-                <span>Value2</span>
+                <span className="font-semibold">Make:</span>
+                <span>{carData.car.carmake}</span>
               </li>
               <li className="flex justify-between items-center mb-2">
-                <span className="font-semibold">Field3</span>
-                <span>Value3</span>
+                <span className="font-semibold">Company:</span>
+                <span>{carData.car.carcompany}</span>
               </li>
               <li className="flex justify-between items-center mb-2">
-                <span className="font-semibold">Field4</span>
-                <span>Value4</span>
+                <span className="font-semibold">Color:</span>
+                <span>{carData.car.carcolor}</span>
               </li>
               <li className="flex justify-between items-center mb-2">
-                <span className="font-semibold">Field5</span>
-                <span>Value5</span>
+                <span className="font-semibold">Price:</span>
+                <span>{carData.car.carprice}</span>
+              </li>
+            </ul>
+
+            {/* Insurance Section */}
+            <h3 className="text-lg font-semibold mb-2 mt-4">Insurance Information</h3>
+            <ul>
+              <li className="flex justify-between items-center mb-2">
+                <span className="font-semibold">Insurance Company:</span>
+                <span>{carData.insurance.companyname}</span>
               </li>
               <li className="flex justify-between items-center mb-2">
-                <span className="font-semibold">Field6</span>
-                <span>Value6</span>
+                <span className="font-semibold">Policy Number:</span>
+                <span>{carData.insurance.policynum}</span>
               </li>
               <li className="flex justify-between items-center mb-2">
-                <span className="font-semibold">Field7</span>
-                <span>Value7</span>
+                <span className="font-semibold">Policy Tenure:</span>
+                <span>{carData.insurance.policytenure} years</span>
               </li>
-              {console.log(`car${params.id}.jpeg`)}
+            </ul>
+
+            {/* Owner Section */}
+            <h3 className="text-lg font-semibold mb-2 mt-4">Owner Information</h3>
+            <ul>
+              <li className="flex justify-between items-center mb-2">
+                <span className="font-semibold">Owner Name:</span>
+                <span>{carData.owner.ownername}</span>
+              </li>
+              <li className="flex justify-between items-center mb-2">
+                <span className="font-semibold">Phone Number:</span>
+                <span>{carData.owner.ownerphone}</span>
+              </li>
+              <li className="flex justify-between items-center mb-2">
+                <span className="font-semibold">Email:</span>
+                <span>{carData.owner.owneremail}</span>
+              </li>
+              <li className="flex justify-between items-center mb-2">
+                <span className="font-semibold">Address:</span>
+                <span>{carData.owner.owneraddress}</span>
+              </li>
             </ul>
           </div>
         </div>
