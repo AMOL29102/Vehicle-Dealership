@@ -43,7 +43,7 @@ function CustomerEnquiry() {
         // Assuming selectedEnquiry contains both serialnum and custcontact
         const { serialnum, customerPhone } = selectedEnquiry; // Adjust based on your data structure
         
-        await axios.delete(`http://localhost:8000/enquiry`, {
+        await axios.delete(`http://localhost:8000/customer`, {
             data: {
                 serialnum: serialnum,
                 custcontact: customerPhone
@@ -77,7 +77,7 @@ function CustomerEnquiry() {
     try {
       setUploading(true);
       const submissionDate = (new Date).toLocaleString();
-      await axios.post('http://localhost:8000/enquiry', {
+      await axios.post('http://localhost:8000/customer', {
         custName: customerName,
         custContact: customerPhone,
         custQuery: description,
@@ -106,7 +106,7 @@ function CustomerEnquiry() {
 
     //console.log("Inside fetchEnquiries")
     try {
-      const response = await axios.get('http://localhost:8000/enquiry');
+      const response = await axios.get('http://localhost:8000/customer');
       const formattedEnquiries = response.data.enquiries.map(enquiry => ({
         serialnum: enquiry.serialnum,
         customerName: enquiry.custname,

@@ -14,7 +14,7 @@ function CarDetails() {
     const fetchCarDetails = async () => {
       try {
         const response = await axios.get(`http://localhost:8000/car/${params.id}`);
-        setCarData(response.data); 
+        setCarData(response.data);
         setLoading(false);
       } catch (err) {
         console.error('Error fetching car details:', err);
@@ -68,7 +68,7 @@ function CarDetails() {
               </li>
               <li className="flex justify-between items-center mb-2">
                 <span className="font-semibold">Company:</span>
-                <span>{carData.car.carcompany}</span>
+                <span>{carData.car.companyname}</span>
               </li>
               <li className="flex justify-between items-center mb-2">
                 <span className="font-semibold">Color:</span>
@@ -85,7 +85,7 @@ function CarDetails() {
             <ul>
               <li className="flex justify-between items-center mb-2">
                 <span className="font-semibold">Insurance Company:</span>
-                <span>{carData.insurance.companyname}</span>
+                <span>{carData.insurance.carcompany}</span>
               </li>
               <li className="flex justify-between items-center mb-2">
                 <span className="font-semibold">Policy Number:</span>
@@ -98,7 +98,7 @@ function CarDetails() {
             </ul>
 
             {/* Owner Section */}
-            <h3 className="text-lg font-semibold mb-2 mt-4">Owner Information</h3>
+            {/* <h3 className="text-lg font-semibold mb-2 mt-4">Owner Information</h3>
             <ul>
               <li className="flex justify-between items-center mb-2">
                 <span className="font-semibold">Owner Name:</span>
@@ -116,7 +116,7 @@ function CarDetails() {
                 <span className="font-semibold">Address:</span>
                 <span>{carData.owner.owneraddress}</span>
               </li>
-            </ul>
+            </ul> */}
           </div>
         </div>
       </main>

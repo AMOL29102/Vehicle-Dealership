@@ -12,11 +12,13 @@ function Navbar() {
 
   const handleSearchInputChange = (e) => {
     setQuery(e.target.value);
+    
   };
 
   const handleSearch = () => {
     console.log('Searching for:', query);
     // Implement your search logic here
+    
   };
 
   const isHomeRoute = location.pathname === '/'; // Check if on the home route

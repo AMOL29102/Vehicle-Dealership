@@ -1,12 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
-
+import axios from 'axios';
+import '@fortawesome/fontawesome-free/css/all.min.css';
+import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 const Dashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [carDetails, setCarDetails] = useState([]);
+
+  const navigate = useNavigate();
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
+
+  const handleView = (url) => {
+    navigate(`/costReport/${url}`)
+  }
+
+  // Fetch car details from the API
+  useEffect(() => {
+    const fetchCarDetails = async () => {
+      try {
+        const response = await axios.get('http://localhost:8000/dashboard');
+        setCarDetails(response.data); // Assuming the response contains an array of car details
+      } catch (error) {
+        console.error('Error fetching car details:', error);
+      }
+    };
+
+    fetchCarDetails();
+  }, []);
 
   return (
     <div className="min-h-screen bg-blue-100 flex flex-col lg:flex-row">
@@ -55,8 +79,6 @@ const Dashboard = () => {
           </ul>
         </nav>
 
-
-
         <div className="min-h-[2px] mt-10 bg-black"></div>
         <NavLink to={'/dashboard/carDetailsForm'}>
           <button className="mt-10 bg-blue-500 text-white w-36 px-7 py-2 rounded hover:bg-blue-600">
@@ -70,14 +92,26 @@ const Dashboard = () => {
           </button>
         </NavLink>
 
+        <NavLink to={'/dashboard/addNoticeImage'}>
+          <button className="mt-10 bg-yellow-500 text-white w-36 px-4 py-2 rounded hover:bg-yellow-600">
+            Add Notice
+          </button>
+        </NavLink>
+
+        <NavLink to={'/dashboard/addNoticeImage'}>
+          <button className="mt-10 bg-blue-500 text-white w-36 px-4 py-2 rounded hover:bg-blue-600">
+            Sell Car
+          </button>
+        </NavLink>
+
         <div className="min-h-[2px] mt-10 bg-black"></div>
         <NavLink to={'/dashboard/customerEnquiry'}>
           <button className="mt-10 bg-green-500 text-white w-36 px-10 py-2 rounded hover:bg-green-600">
             Enquiry
           </button>
         </NavLink>
-
       </div>
+
       <div className="lg:hidden p-5">
         <button
           onClick={toggleSidebar}
@@ -105,10 +139,10 @@ const Dashboard = () => {
             Sample Card1
           </div>
           <div className="bg-blue-300 p-5 rounded text-white min-h-4">
-            Sample Card1
+            Sample Card2
           </div>
           <div className="bg-orange-300 p-5 rounded text-white min-h-4">
-            Sample Card1
+            Sample Card3
           </div>
         </div>
 
@@ -117,66 +151,37 @@ const Dashboard = () => {
           <table className="w-full table-auto">
             <thead>
               <tr className="text-left bg-gray-200">
-                <th className="p-2">Owner</th>
+                <th className="p-2">Owner Name</th>
                 <th className="p-2">Email</th>
-                <th className="p-2">Vehicle Type</th>
-                <th className="p-2">Vehicle no</th>
+                <th className="p-2">Phone</th>
+                <th className="p-2">Car Make</th>
+                <th className="p-2">Car Name</th>
+                <th className="p-2">Register No</th>
                 <th className="p-2">Status</th>
+                <th className="p-2">View</th>
+
               </tr>
             </thead>
             <tbody>
-              {[
-                {
-                  owner: "Mike Bhagat",
-                  email: "mikebhagat@gmail.com",
-                  VechicleType: "MUV",
-                  VechicleNo: "MH48Ck9597",
-                  status: "sold",
-                },
-                {
-                  owner: "Anika Suri",
-                  email: "anikasuri@mail.com",
-                  VechicleType: "Car",
-                  VechicleNo: "MH48Ck9596",
-                  status: "available",
-                },
-                {
-                  owner: "Ravi Kumar",
-                  email: "ravikumar@gmail.com",
-                  VechicleType: "Truck",
-                  VechicleNo: "MH48Ck9595",
-                  status: "sold",
-                },
-                {
-                  owner: "Mike Honey",
-                  email: "mikehoney@gmail.com",
-                  VechicleType: "Muv",
-                  VechicleNo: "MH48Ck9594",
-                  status: "available",
-                },
-                {
-                  owner: "Kevin Peterson",
-                  email: "kevinp@mail.com",
-                  VechicleType: "Car",
-                  VechicleNo: "MH48Ck9591",
-                  status: "sold",
-                },
-              ].map((user, index) => (
+              {carDetails.map((car, index) => (
                 <tr key={index} className="border-b">
-                  <td className="p-2">{user.owner}</td>
-                  <td className="p-2">{user.email}</td>
-                  <td className="p-2">{user.VechicleType}</td>
-                  <td className="p-2">{user.VechicleNo}</td>
+                  <td className="p-2">{car.ownername}</td>
+                  <td className="p-2">{car.owneremail}</td>
+                  <td className="p-2">{car.ownerphone}</td>
+                  <td className="p-2">{car.carmake}</td>
+                  <td className="p-2">{car.carname}</td>
+                  <td className="p-2">{car.registernumber}</td>
                   <td className="p-2">
                     <span
-                      className={`px-2 py-1 rounded-full text-xs ${user.status === "sold"
-                          ? "bg-green-100 text-green-700"
-                          : "bg-yellow-100 text-yellow-700"
+                      className={`px-2 py-1 rounded-full text-xs ${car.status === true
+                        ? "bg-green-100 text-green-700"
+                        : "bg-yellow-100 text-yellow-700"
                         }`}
                     >
-                      {user.status}
+                      {car.status === true ? "sold" : "Available"}
                     </span>
                   </td>
+                  <td className="p-2"><button onClick={() => handleView(car.registernumber)}><i className={'fas fa-eye'}></i></button></td>
                 </tr>
               ))}
             </tbody>

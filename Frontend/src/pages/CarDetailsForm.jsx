@@ -15,7 +15,7 @@ function AdminForm() {
   const [ownerEmail, setOwnerEmail] = useState('');
   const [ownerAddress, setOwnerAddress] = useState('');
   const [carColor, setCarColor] = useState('');
-  const [carPrice, setCarPrice] = useState('');
+  const [carPrice, setCarPrice] = useState(''); 
   const [carType, setCarType] = useState('');
   const [uploading, setUploading] = useState(false);
   const [images, setImages] = useState([]);

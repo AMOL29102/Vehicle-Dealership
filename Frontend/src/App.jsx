@@ -11,9 +11,11 @@ import Login from './pages/Login';
 import CarDetailsForm  from "./pages/CarDetailsForm"
 import DeleteCarDetails from './pages/DeleteCarDetails';
 import Dashboard from './pages/Dashboard';
+import AddNoticeImage  from './pages/AddNoticeImage'
 import { ToastContainer } from 'react-toastify'; // Import ToastContainer
 import 'react-toastify/dist/ReactToastify.css';
 import CustomerEnquiry from './pages/CustomerEnquiry';
+import CostReport from './pages/CostReport';
   const router = createBrowserRouter([
     {
       path:"/",
@@ -73,9 +75,28 @@ import CustomerEnquiry from './pages/CustomerEnquiry';
       )
     },
     {
+      path:"/dashboard/addNoticeImage",
+      element:(
+        <Layout>
+          <AddNoticeImage/>
+        </Layout>
+      )
+      
+    },
+    {
+      path:"/costReport/:id",
+      element:(
+        <Layout>
+          <CostReport/>
+        </Layout>
+      )
+    },
+    {
       path: "*",
       element: () => <h1>Page Not Found</h1>
     }
+
+    
   ])
 
   function App() {

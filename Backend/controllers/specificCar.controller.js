@@ -3,7 +3,7 @@ const db = require("../models/database");
 async function handleSpecifiPage(req, res) {
     try {
         const regisNum = req.params.registrationnumber;
-        //console.log(regisNum);
+        console.log(regisNum);
         const values = [regisNum];
 
         // Query to fetch car details

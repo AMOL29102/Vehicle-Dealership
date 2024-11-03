@@ -29,7 +29,7 @@ function DeleteCarDetails() {
     try {
       const response = await axios.get(`http://localhost:8000/car/${currDeleteId}`);
       setCarData(response.data); // Store the fetched car data
-      //console.log(response.data); // Log the fetched car data
+      console.log(response.data); // Log the fetched car data
     } catch (err) {
       setCarData(null);
       console.error('Error fetching car details:', err);
@@ -61,10 +61,15 @@ function DeleteCarDetails() {
 
       // API call goes here: axios.delete(`/api/vehicles/${submittedID}`)
       try {
-        //console.log(`Deleting entry for Vehicle with ID: ${submittedID}`);
-        const response = await axios.post(`http://localhost:8000/dashboard/deleteCarDetails/${submittedID}`);
+        console.log(`Deleting entry for Vehicle with ID: ${submittedID}`);
+        const response = await axios.delete(`http://localhost:8000/delete`, {
+          params: {
+              deletedID: submittedID
+          }
+      });
+      
         
-        //console.log("Delete entry : "+response.data); // Log the fetched car data
+        console.log("Delete entry : "+response.data); // Log the fetched car data
 
 
         toast.success(`Vehicle with Reg ID ${submittedID} deleted successfully!`, {
@@ -205,7 +210,7 @@ function DeleteCarDetails() {
                   </ul>
 
                   {/* Insurance Section */}
-                  <h3 className="text-lg font-semibold mb-2 mt-4">Insurance Information</h3>
+                  {/* <h3 className="text-lg font-semibold mb-2 mt-4">Insurance Information</h3>
                   <ul>
                     <li className="flex justify-between items-center mb-2">
                       <span className="font-semibold">Insurance Company:</span>
@@ -219,10 +224,10 @@ function DeleteCarDetails() {
                       <span className="font-semibold">Policy Tenure:</span>
                       <span>{carData.insurance.policytenure} years</span>
                     </li>
-                  </ul>
+                  </ul> */}
 
                   {/* Owner Section */}
-                  <h3 className="text-lg font-semibold mb-2 mt-4">Owner Information</h3>
+                  {/* <h3 className="text-lg font-semibold mb-2 mt-4">Owner Information</h3>
                   <ul>
                     <li className="flex justify-between items-center mb-2">
                       <span className="font-semibold">Owner Name:</span>
@@ -240,7 +245,7 @@ function DeleteCarDetails() {
                       <span className="font-semibold">Address:</span>
                       <span>{carData.owner.owneraddress}</span>
                     </li>
-                  </ul>
+                  </ul> */}
                 </div>
               </div>
             </main>
