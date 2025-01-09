@@ -1,18 +1,31 @@
 const db = require("../models/database");
+const { getObjectURL, listImagesInFolder } = require("../amazonS3/s3config"); // Import S3 functions
+
+
+async function listDocHelper(FolderName) {
+    // Fetch image keys from the S3 folder
+    const DocsKeys = await listImagesInFolder(FolderName);
+
+    // Generate signed URLs for other images, starting from 1
+    const DocsPromises = DocsKeys?.map(async (key, index) => {
+        return await getObjectURL(key); // Generate URL for each image key
+    });
+
+    // Wait for all other image promises to resolve
+    const DocsUrls = await Promise.all(DocsPromises);
+    return DocsUrls;
+}
+
 
 async function handleSpecifiPage(req, res) {
     try {
-        const regisNum = req.params.registrationnumber;
-        console.log(regisNum);
+        const regisNum = req.params.registernumber;
+        console.log(`Registration Number: ${regisNum}`);
         const values = [regisNum];
 
         // Query to fetch car details
         const query1 = `SELECT * FROM cardetails WHERE registernumber = $1`;
         const detailsResult = await db.query(query1, values);
-
-        // Query to fetch images related to the car
-        const query2 = `SELECT image_urls FROM images WHERE carNumber = $1`;
-        const imageResults = await db.query(query2, values);
 
         // Query to fetch car insurance details
         const query3 = `SELECT * FROM carinsurance WHERE registernumber = $1`;
@@ -24,18 +37,34 @@ async function handleSpecifiPage(req, res) {
 
         if (detailsResult.rows.length > 0) {
             const car = detailsResult.rows[0];
-            const images = imageResults.rows.length > 0 ? imageResults.rows[0].image_urls : []; // Getting image URLs array
             const insurance = insuranceResults.rows[0]; // Assuming one insurance record per car
             const owner = ownerResults.rows[0]; // Assuming one owner record per car
 
-            //console.log(car);
+            // S3 folder structure for images (e.g., regisNum/VehicleImages/)
+            const inventoryImagesFolder = `${regisNum}/InventoryVehicleImages/`;
+            const onsiteImagesFolder = `${regisNum}/OnsiteVehicleImages/`
 
-            res.json({ car, images, insurance, owner });
+
+            // // Fetch image keys from the S3 folder
+            // const imageKeys = await listImagesInFolder(imageFolder);
+            // console.log(`Image Keys for ${regisNum}: ${imageKeys}`);
+
+            // // Generate signed URLs for other images, starting from 1
+            // const imagesPromises = imageKeys?.map(async (key, index) => {
+            //     return await getObjectURL(key); // Generate URL for each image key
+            // });
+
+            // Wait for all other image promises to resolve
+            const images = await listDocHelper(inventoryImagesFolder)
+            const onsiteImages = await listDocHelper(onsiteImagesFolder);
+
+            // console.log(insurance);
+            res.json({ car, images, insurance, owner, onsiteImages });
         } else {
             res.status(400).send("Car not found");
         }
     } catch (error) {
-        console.log(`Error occurred: ${error}`);
+        console.error(`Error occurred: ${error.message}`);
         res.status(500).send("Internal Server Error");
     }
 }

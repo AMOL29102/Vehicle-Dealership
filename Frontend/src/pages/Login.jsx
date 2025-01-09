@@ -1,12 +1,19 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { jwtDecode } from "jwt-decode";
+
+
 
 function Login() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
     const [errorMessage, setErrorMessage] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+
+
+
 
     async function loginHandler(event) {
         event.preventDefault();
@@ -18,20 +25,51 @@ function Login() {
             return;
         }
 
-        const endpoint = "http://localhost:8000/login"; // Update with your actual endpoint
+        //https://www.nikhilmotors.com/api/
+        //https://www.nikhilmotors.com/api/
+        //http://65.2.78.63/
+        const endpoint = "https://www.nikhilmotors.com/api/login"; // Update with your actual endpoint
 
         try {
-            const response = await axios.post(endpoint, { userID: username, userPass:password });
+            setIsLoading(true)
+            // Trim and convert username and password to lowercase
+            const trimmedUsername = username.trim().toLowerCase();
+            const trimmedPassword = password.trim().toLowerCase();
+
+            const response = await axios.post(endpoint, {
+                userID: trimmedUsername,
+                userPass: trimmedPassword
+            });
             const token = response.data; // Assuming the token is sent as response data
             localStorage.setItem('authToken', token);
-            alert("Login successful");
-            navigate("/dashboard");  // Navigate to dashboard upon success
+            alert("Login Successful");
+
+
+            let decodedToken;
+            if (token) {
+                try {
+                    decodedToken = jwtDecode(token);
+                    console.log(decodedToken);
+
+                } catch (error) {
+                    console.error("Invalid token", error);
+
+                }
+            }
+            if (decodedToken.isAdmin == true || decodedToken.isEmployee == true) {
+
+                navigate("/dashboard");  // Navigate to dashboard upon success
+            }
+            else if (decodedToken.isDriver == true) {
+                navigate("/driverdashboard");
+            }
+            setIsLoading(false)
         } catch (error) {
             // Enhanced error handling
             if (error.response) {
                 // Server responded with a status other than 2xx
                 console.error("Login failed: ", error.response.data);
-                
+
                 if (error.response.status === 400) {
                     setErrorMessage("User does not exist or details are missing.");
                 } else if (error.response.status === 401) {
@@ -49,8 +87,9 @@ function Login() {
                 setErrorMessage("There was an error during the login process.");
             }
 
-            alert(errorMessage);  
+            // toast.error("Login failed.", { position: "top-center", autoClose: 2000 });
         }
+        setIsLoading(false)
 
         // setUsername('');
         // setPassword('');
@@ -89,7 +128,11 @@ function Login() {
                         type='submit'
                         className='w-full px-3 py-2 bg-green-500 text-white font-bold rounded-lg hover:bg-green-600 transition-colors duration-300'
                     >
-                        Login
+                        {isLoading ? (
+                            <span className="loader">Logging in...</span> // Simple text loader, you can add a spinner here
+                        ) : (
+                            "Login"
+                        )}
                     </button>
                 </div>
 

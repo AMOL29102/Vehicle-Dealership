@@ -12,16 +12,31 @@ function CarDetails() {
 
   useEffect(() => {
     const fetchCarDetails = async () => {
+      setLoading(true); // Start loading
       try {
-        const response = await axios.get(`http://localhost:8000/car/${params.id}`);
-        setCarData(response.data);
-        setLoading(false);
+        const response = await axios.get(`https://www.nikhilmotors.com/api/landingcar/${params.id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('authToken')}`
+            }
+          }
+        );
+        if (response.status === 200) {
+          setCarData(response.data);
+          console.log(response.data);
+        }
       } catch (err) {
+        if (err.response && err.response.status === 400) {
+          setError('Car not found'); // Set specific error message for 404
+        } else {
+          setError('Error fetching car details'); // General error message
+        }
         console.error('Error fetching car details:', err);
-        setError('Error fetching car details');
-        setLoading(false);
+      } finally {
+        setLoading(false); // End loading regardless of success or error
       }
     };
+
 
     fetchCarDetails();
   }, [params.id]);
@@ -42,7 +57,7 @@ function CarDetails() {
               showThumbs={false}
               className="rounded-t-lg"
             >
-              {carData.images.map((image, index) => (
+              {carData.images?.map((image, index) => (
                 <div key={index}>
                   <img
                     src={image}  // Correctly use the image URL
@@ -55,48 +70,49 @@ function CarDetails() {
           </div>
 
           <div className="bg-white shadow-md rounded-md p-4">
-            <h2 className="text-2xl font-bold mb-4">{carData.car.carname} Details</h2>
-            <h3 className="text-lg font-semibold mb-2">Car Information</h3>
-            <ul>
-              <li className="flex justify-between items-center mb-2">
-                <span className="font-semibold">Car Name:</span>
+            <h2 className="text-2xl font-bold mb-4 text-center">Vehicle Details</h2>
+            <h3 className="text-lg font-semibold mb-2">Vehicle Information</h3>
+            <ul className="space-y-2">
+              <li className="flex justify-between items-center border-b pb-2">
+                <span className="font-semibold">Vehicle Name:</span>
                 <span>{carData.car.carname}</span>
               </li>
-              <li className="flex justify-between items-center mb-2">
-                <span className="font-semibold">Make:</span>
+              <li className="flex justify-between items-center border-b pb-2">
+                <span className="font-semibold">Vehicle Type:</span>
                 <span>{carData.car.carmake}</span>
               </li>
-              <li className="flex justify-between items-center mb-2">
+              <li className="flex justify-between items-center border-b pb-2">
                 <span className="font-semibold">Company:</span>
-                <span>{carData.car.companyname}</span>
+                <span>{carData.car.carcompany}</span>
               </li>
-              <li className="flex justify-between items-center mb-2">
+              <li className="flex justify-between items-center border-b pb-2">
                 <span className="font-semibold">Color:</span>
                 <span>{carData.car.carcolor}</span>
               </li>
-              <li className="flex justify-between items-center mb-2">
+              <li className="flex justify-between items-center border-b pb-2">
                 <span className="font-semibold">Price:</span>
-                <span>{carData.car.carprice}</span>
+                <span className="text-blue-500">₹ {carData.car.vehiclesellprice}</span>
               </li>
             </ul>
 
             {/* Insurance Section */}
-            <h3 className="text-lg font-semibold mb-2 mt-4">Insurance Information</h3>
-            <ul>
-              <li className="flex justify-between items-center mb-2">
-                <span className="font-semibold">Insurance Company:</span>
-                <span>{carData.insurance.carcompany}</span>
-              </li>
-              <li className="flex justify-between items-center mb-2">
-                <span className="font-semibold">Policy Number:</span>
-                <span>{carData.insurance.policynum}</span>
-              </li>
-              <li className="flex justify-between items-center mb-2">
-                <span className="font-semibold">Policy Tenure:</span>
-                <span>{carData.insurance.policytenure} years</span>
-              </li>
-            </ul>
-
+            {carData.insurance && (carData.insurance.insurancetenure) != 0 && <><h3 className="text-lg font-semibold mb-2 mt-4">Insurance Information</h3>
+              <ul className="space-y-2">
+                <li className="flex justify-between items-center border-b pb-2">
+                  <span className="font-semibold">Insurance Company:</span>
+                  <span>{carData.insurance.insurancecompany}</span>
+                </li>
+                <li className="flex justify-between items-center border-b pb-2">
+                  <span className="font-semibold">Policy Number:</span>
+                  <span>{carData.insurance.insurancenumber}</span>
+                </li>
+                <li className="flex justify-between items-center border-b pb-2">
+                  <span className="font-semibold">Policy Tenure:</span>
+                  <span>{carData.insurance.insurancetenure} years</span>
+                </li>
+              </ul>
+            </>
+            }
             {/* Owner Section */}
             {/* <h3 className="text-lg font-semibold mb-2 mt-4">Owner Information</h3>
             <ul>

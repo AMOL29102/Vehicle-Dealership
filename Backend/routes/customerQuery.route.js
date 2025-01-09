@@ -1,14 +1,16 @@
 const express = require("express")
 const {handleGetQuery,handleNewCustomerQuery,handleDeleteCustomerQuery} = require("../controllers/customerQuery.controller")
+const { authenticateToken, authorizeEmployeeOrAdmin,authorizeAdmin } = require("../controllers/userRole-auth");
+
 
 
 const customerReviewRouter = express.Router();
 
-customerReviewRouter.get("/",handleGetQuery);
+customerReviewRouter.get("/",authenticateToken, authorizeEmployeeOrAdmin ,handleGetQuery);
 
-customerReviewRouter.post("/", handleNewCustomerQuery);
+customerReviewRouter.post("/",authenticateToken, authorizeEmployeeOrAdmin , handleNewCustomerQuery);
 
-customerReviewRouter.delete("/", handleDeleteCustomerQuery  );
+customerReviewRouter.delete("/",authenticateToken, authorizeEmployeeOrAdmin , handleDeleteCustomerQuery  );
 
 
 module.exports = customerReviewRouter;

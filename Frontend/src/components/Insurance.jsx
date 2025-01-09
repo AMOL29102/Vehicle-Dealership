@@ -9,9 +9,13 @@ export default function Insurance() {
     const handleInstallmentSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post("http://localhost:8000/installments/add", {
+            const response = await axios.post("https://www.nikhilmotors.com/api/installments/add", {
                 amount: installmentAmount,
                 date: installmentDate,
+            }, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('authToken')}`
+                }
             });
 
             if (response.status === 200) {
@@ -57,3 +61,4 @@ export default function Insurance() {
         </>
     );
 }
+

@@ -1,88 +1,67 @@
+
 const db = require("../models/database");
+const { getObjectURL } = require("../amazonS3/s3config");
 
 async function handleHomePage(req, res) {
-    const { fuelType, carMake } = req.query;
-    //console.log(fuelType, carMake);
+    const { fuelType, carMake, carSearch } = req.query; // Extract parameters from query
     try {
         let query1 = `
-        SELECT c.carname, c.registernumber, c.carcolor, c.carprice, ci.image_urls
+        SELECT c.carname, c.registernumber, c.carcolor, c.vehiclebuyprice,c.vehiclesellprice, c.status, c.onhomepage
         FROM cardetails c 
-        JOIN images ci ON c.registernumber = ci.carNumber
         WHERE 1=1
         `;
+
+        // Add condition for fuelType
         if (fuelType) {
             query1 += ` AND c.fuel = '${fuelType}'`;
         }
-        //console.log(query1);
+
+        // Add condition for carMake
         if (carMake) {
             query1 += ` AND c.carmake = '${carMake}'`;
         }
-        //console.log(query1);
+
+        // Add condition for carSearch to check both carname and registernumber
+        if (carSearch) {
+            query1 += ` AND (LOWER(c.carname) LIKE LOWER('%${carSearch}%') OR LOWER(c.registernumber) LIKE LOWER('%${carSearch}%'))`;
+        }
 
         query1 += ` ORDER BY c.registernumber`;
 
         const result = await db.query(query1);
-        const carsWithImages = result.rows.map(row => ({
-            registrationnumber: row.registernumber,
-            carname: row.carname, 
-            carprice: row.carprice, 
-            imageurl: row.image_urls
-        }));
-        
+
+        // Create an array of promises for getting signed URLs
+        const carsWithImagesPromises = result.rows?.map(async (row) => {
+            const carNumber = row.registernumber; // Get the car number from the row
+            const displayImageKey = `${carNumber}/InventoryVehicleImages/0`; // Generate key for display image
+
+            // Generate signed URL for display image
+            const displayImageUrl = await getObjectURL(displayImageKey);
+            console.log(`Display Image URL: ${displayImageUrl}`);
+
+
+            return {
+                registernumber: row.registernumber,
+                carname: row.carname,
+                carprice: row.vehiclesellprice,
+                status: row.status,
+                displayImage: displayImageUrl,
+                onhomepage:row.onhomepage
+
+            };
+        });
+
+        // Wait for all promises to resolve
+        const carsWithImages = await Promise.all(carsWithImagesPromises);
+
         res.json({
             carsWithImages
         });
-        
+
     } catch (error) {
         console.log(`${error} : Error occurred while loading images`);
-        res.status(500).json({ error: "Internal Server Error" }); // Return an error response
+        res.status(500).json({ error: "Internal Server Error" });
     }
 }
 
 module.exports = handleHomePage;
-
-
-// const db = require("../models/database")
-
-// async function handleHomePage(req,res) {
-//     const {fuelType,carMake} = req.query;
-//     try{
-//         let query1 = `
-//         SELECT c.carname,c.registernumber,c.carcolor,c.carprice,ci.image_urls
-//         FROM cardetails c 
-//         JOIN images ci ON c.registernumber = ci.carNumber
-//         WHERE 1=1
-//          `;
-
-//         // Add conditions only when they exist
-//         if (fuelType) {
-//             query1 = query1 + ` AND c.fuel = '${fuelType}'`;
-//         }
-//         //console.log(query1);
-//         if (carMake) {
-//             query1 = query1 + ` AND c.carmake = '${carMake}'`;
-//         }
-//         //console.log(query1);
-
-
-//         query1 = query1 + ` ORDER BY c.registernumber`;
-
-//         const result = await db.query(query1);
-//             const carsWithImages = result.rows.map(row => ({
-//                 registrationnumber: row.registernumber,
-//                 imageurl: row.image_urls,
-//                 carprice: row.carprice,
-//                 carname: row.carname
-
-//             }));
-//             //console.log(carsWithImages);
-//             res.json({
-//                 carsWithImages
-//              });
-        
-//     }catch(error){
-//         console.log(`${error} : Error occured while loading images`);
-//     }  
-// }
-
-// module.exports = handleHomePage;

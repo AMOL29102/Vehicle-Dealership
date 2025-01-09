@@ -1,13 +1,11 @@
 const express = require("express");
-const handleImageUpload = require("../controllers/imageUpload.controller.js");
-const upload = require("../middlewares/multer.middleware.js");
+const {generatePresignedUploadUrl,handleDeleteImage} = require("../controllers/s3ImageFunctions.controller.js");
+const { authenticateToken, authorizeEmployeeOrAdmin,authorizeDriverOrEmployeeOrAdmin } = require("../controllers/userRole-auth");
 
-Imagerouter = express.Router();
+const Imagerouter = express.Router();
 
-Imagerouter.get("/",(req,res)=>{
-    return res.render("upload");
-})
 
-Imagerouter.post("/",upload.array("images[]",10),handleImageUpload);
+Imagerouter.get('/generate-upload-url', authenticateToken, authorizeDriverOrEmployeeOrAdmin,generatePresignedUploadUrl);
+Imagerouter.delete("/",authenticateToken, authorizeEmployeeOrAdmin,handleDeleteImage)
 
 module.exports = Imagerouter;
