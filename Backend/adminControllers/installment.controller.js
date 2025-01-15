@@ -58,24 +58,33 @@ async function addInstallments(req, res) {
     }
 }
 const getInstallments = async (req, res) => {
-    const { registernumber } = req.query;;
-    console.log(registernumber)
+    const { registernumber } = req.query;
+    console.log(registernumber);
+
     try {
+        // Query to fetch installments and sum of the 'amount' column
         const installmentsResponse = await db.query(
-            `SELECT * FROM installments WHERE registernumber = $1`,
+            `SELECT *, (SELECT SUM(amount) FROM installments WHERE registernumber = $1) AS total_amount 
+             FROM installments WHERE registernumber = $1`,
             [registernumber]
         );
 
-        // if (installmentsResponse.rows.length === 0) {
-        //     return res.status(404).json({ message: "No installments found for this car" });
-        // }
+        // Check if installments are found
+        if (installmentsResponse.rows.length === 0) {
+            return res.status(404).json({ message: "No installments found for this car" });
+        }
 
-        res.status(200).json(installmentsResponse.rows);
+        // Return the installments along with the sum of the amount
+        res.status(200).json({
+            installments: installmentsResponse.rows,
+            totalAmount: installmentsResponse.rows[0].total_amount // Access the sum value from the first row
+        });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Failed to retrieve installments", error: error.message });
     }
 };
+
 
 // Export the controllers
 module.exports = {

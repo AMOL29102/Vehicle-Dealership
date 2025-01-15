@@ -231,6 +231,10 @@ function SellCarDetails() {
                   </h3>
                   <ul className="space-y-2">
                     <li className="flex justify-between items-center border-b pb-2">
+                      <span className="font-semibold">Vehicle Register Number:</span>
+                      <span>{carData.car.registernumber}</span>
+                    </li>
+                    <li className="flex justify-between items-center border-b pb-2">
                       <span className="font-semibold">Vehicle Name:</span>
                       <span>{carData.car.carname}</span>
                     </li>
@@ -247,10 +251,28 @@ function SellCarDetails() {
                       <span>{carData.car.carcolor}</span>
                     </li>
                     <li className="flex justify-between items-center border-b pb-2">
+                      <span className="font-semibold">Kilometers :</span>
+                      <span>{carData.car.kilometers}</span>
+                    </li>
+                    <li className="flex justify-between items-center border-b pb-2">
+                      <span className="font-semibold">Fitness Upto :</span>
+                      <span>{(new Date(carData.car.fitness_upto_date)).toLocaleDateString('en-GB')}</span>
+                    </li>
+                    <li className="flex justify-between items-center border-b pb-2">
+                      <span className="font-semibold">Registration Date :</span>
+                      <span>{(new Date(carData.car.registration_date)).toLocaleDateString('en-GB')}</span>
+                    </li>
+                    <li className="flex justify-between items-center border-b pb-2">
                       <span className="font-semibold">Price:</span>
                       <span className="text-blue-500">
                         ₹ {carData.car.vehiclesellprice}
                       </span>
+                    </li>
+                    <li className="flex justify-between items-start border-b pb-2">
+                      <span className="font-semibold">Description:</span>
+                      <div className="ml-2 w-full">
+                        <p className="break-words whitespace-normal">{carData.car.description}</p>
+                      </div>
                     </li>
                   </ul>
                 </div>

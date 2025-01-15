@@ -14,25 +14,25 @@ const MonthlyAccountDetails = () => {
     fetchMonthlyProfit();
 
   }, [month, year]);
-  
+
   useEffect(() => {
-      function fetchRole() {
-        const token = localStorage.getItem("authToken");
-        let decodedToken;
-        if (token) {
-          try {
-            decodedToken = jwtDecode(token);
-            console.log(decodedToken);
-          } catch (error) {
-            console.error("Invalid token", error);
-          }
-        }
-        if (decodedToken?.isAdmin && decodedToken.isAdmin == true) {
-          setIsAdmin(true);
+    function fetchRole() {
+      const token = localStorage.getItem("authToken");
+      let decodedToken;
+      if (token) {
+        try {
+          decodedToken = jwtDecode(token);
+          console.log(decodedToken);
+        } catch (error) {
+          console.error("Invalid token", error);
         }
       }
-      fetchRole();
-    }, []);
+      if (decodedToken?.isAdmin && decodedToken.isAdmin == true) {
+        setIsAdmin(true);
+      }
+    }
+    fetchRole();
+  }, []);
 
   const fetchData = async () => {
     setIsFetching(true);

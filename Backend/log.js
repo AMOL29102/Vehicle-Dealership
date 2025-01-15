@@ -119,78 +119,149 @@ async function appendLogToS3(bucketName, filename, logEntry) {
 }
 
 
+// function logResReq() {
+//     return async (req, res, next) => {
+//         // console.log("logResReq middleware triggered");
+//         const user = req?.user ? req?.user?.username : 'Anonymous';
+//         // console.log("User:", user);
+
+//         // Convert to IST (UTC+5:30)
+//         const currentDate = new Date();
+//         const istDate = new Date(currentDate.getTime() + (5.5 * 60 * 60 * 1000)); // Offset by 5 hours and 30 minutes
+//         const timestamp = istDate.toISOString().replace('T', ' ').split('.')[0]; // Format timestamp without milliseconds
+        
+//         const bucketName = "vehicledealership";
+//         const filename = `logs/${timestamp.split(" ")[0]}.csv`; // Using date portion only
+
+//         let logMessage = '';
+//         if (req.method === 'POST' && req.path.includes('/details')) {
+//             const vehicleNumber = req.body.registernumber || 'Unknown';
+//             logMessage = `${timestamp} : ${user} added a vehicle with number: ${vehicleNumber}`;
+//         } else if (req.method === 'POST' && req.path.includes('/maintainance')) {
+//             const vehicleNumber = req.body.registernumber || 'Unknown';
+//             logMessage = `${timestamp} : ${user} added maintenance for vehicle number: ${vehicleNumber}`;
+//         } else if (req.method === 'POST' && req.path.includes('/installments')) {
+//             const vehicleNumber = req.body.registernumber || 'Unknown';
+//             logMessage = `${timestamp} : ${user} added an installment for vehicle number: ${vehicleNumber}`;
+//         } else if (req.method === 'DELETE' && req.path.includes('/delete/car')) {
+//             const vehicleNumber = req.query.deletedID || 'Unknown';
+//             logMessage = `${timestamp} : ${user} deleted vehicle with vehicle number: ${vehicleNumber}`;
+//         } else if (req.method === 'POST' && req.path.includes('/customer')) {
+//             logMessage = `${timestamp} : ${user} added Customer query`;
+//         } else if (req.method === 'DELETE' && req.path.includes('customer')) {
+//             const vehicleNumber = req.body.registernumber || 'Unknown';
+//             logMessage = `${timestamp} : ${user} deleted Customer query`;
+//         } else if (req.method === 'POST' && req.path.includes('/edit-fields')) {
+//             const vehicleNumber = req.body.registernumber || 'Unknown';
+//             logMessage = `${timestamp} : ${user} edited fields for vehicle number: ${vehicleNumber}`;
+//         } else if (req.method === 'POST' && req.path.includes('/miscellaneous-costs/add')) {
+//             logMessage = `${timestamp} : ${user} added miscellaneous costs`;
+//         } else if (req.method === 'POST' && req.path.includes('/dashboard/sell-car')) {
+//             const vehicleNumber = req.body.carID || 'Unknown';
+//             logMessage = `${timestamp} : ${user} sold vehicle with vehicle number: ${vehicleNumber}`;
+//         } else if (req.method === 'POST' && req.path.includes('/dashboard/delete-notice')) {
+//             logMessage = `${timestamp} : ${user} deleted notice image`;
+//         } else if (req.method === 'POST' && req.path.includes('/accountDetails')){
+//             logMessage = `${timestamp} : ${user} added an investment`;
+//         } else if (req.method === 'POST' && req.path.includes('/edit-fields')){
+//             logMessage = `${timestamp} : ${user} edited fields of vehicle details`;
+//         } else if (req.method === 'POST' && req.path.includes('/miscellaneous-costs/add')){
+//             logMessage = `${timestamp} : ${user} Added miscellaneous costs`;
+//         } else if (req.method === 'POST' && req.path === 'Description'){
+//             logMessage = `${timestamp} : ${user} Added Documents`;
+//         }
+
+//         // console.log("Log Message:", logMessage);
+
+//         // Call the deleteOldLogs function to remove logs from two days ago
+//         try {
+//             await deleteOldLogs(bucketName);
+//         } catch (error) {
+//             console.error("Failed to delete old logs:", error);
+//         }
+
+//         // Only append logs if a valid log message is created
+//         if (logMessage) {
+//             try {
+//                 await appendLogToS3(bucketName, filename, logMessage);
+//             } catch (error) {
+//                 console.error("Failed to upload log:", error);
+//             }
+//         }
+
+//         next(); // Ensure next() is always called, even if there's no log message
+//     };
+// }
+
 function logResReq() {
     return async (req, res, next) => {
-        // console.log("logResReq middleware triggered");
-        const user = req?.user ? req?.user?.username : 'Anonymous';
-        // console.log("User:", user);
-
-        // Convert to IST (UTC+5:30)
-        const currentDate = new Date();
-        const istDate = new Date(currentDate.getTime() + (5.5 * 60 * 60 * 1000)); // Offset by 5 hours and 30 minutes
-        const timestamp = istDate.toISOString().replace('T', ' ').split('.')[0]; // Format timestamp without milliseconds
-        
-        const bucketName = "vehicledealership";
-        const filename = `logs/${timestamp.split(" ")[0]}.csv`; // Using date portion only
-
-        let logMessage = '';
-        if (req.method === 'POST' && req.path.includes('/details')) {
-            const vehicleNumber = req.body.registernumber || 'Unknown';
-            logMessage = `${timestamp} : ${user} added a vehicle with number: ${vehicleNumber}`;
-        } else if (req.method === 'POST' && req.path.includes('/maintainance')) {
-            const vehicleNumber = req.body.registernumber || 'Unknown';
-            logMessage = `${timestamp} : ${user} added maintenance for vehicle number: ${vehicleNumber}`;
-        } else if (req.method === 'POST' && req.path.includes('/installments')) {
-            const vehicleNumber = req.body.registernumber || 'Unknown';
-            logMessage = `${timestamp} : ${user} added an installment for vehicle number: ${vehicleNumber}`;
-        } else if (req.method === 'DELETE' && req.path.includes('/delete/car')) {
-            const vehicleNumber = req.query.deletedID || 'Unknown';
-            logMessage = `${timestamp} : ${user} deleted vehicle with vehicle number: ${vehicleNumber}`;
-        } else if (req.method === 'POST' && req.path.includes('/customer')) {
-            logMessage = `${timestamp} : ${user} added Customer query`;
-        } else if (req.method === 'DELETE' && req.path.includes('customer')) {
-            const vehicleNumber = req.body.registernumber || 'Unknown';
-            logMessage = `${timestamp} : ${user} deleted Customer query`;
-        } else if (req.method === 'POST' && req.path.includes('/edit-fields')) {
-            const vehicleNumber = req.body.registernumber || 'Unknown';
-            logMessage = `${timestamp} : ${user} edited fields for vehicle number: ${vehicleNumber}`;
-        } else if (req.method === 'POST' && req.path.includes('/miscellaneous-costs/add')) {
-            logMessage = `${timestamp} : ${user} added miscellaneous costs`;
-        } else if (req.method === 'POST' && req.path.includes('/dashboard/sell-car')) {
-            const vehicleNumber = req.body.carID || 'Unknown';
-            logMessage = `${timestamp} : ${user} sold vehicle with vehicle number: ${vehicleNumber}`;
-        } else if (req.method === 'POST' && req.path.includes('/dashboard/delete-notice')) {
-            logMessage = `${timestamp} : ${user} deleted notice image`;
-        } else if (req.method === 'POST' && req.path.includes('/accountDetails')){
-            logMessage = `${timestamp} : ${user} added an investment`;
-        } else if (req.method === 'POST' && req.path.includes('/edit-fields')){
-            logMessage = `${timestamp} : ${user} edited fields of vehicle details`;
-        } else if (req.method === 'POST' && req.path.includes('/miscellaneous-costs/add')){
-            logMessage = `${timestamp} : ${user} Added miscellaneous costs`;
-        } else if (req.method === 'POST' && req.path === 'Description'){
-            logMessage = `${timestamp} : ${user} Added Documents`;
-        }
-
-        // console.log("Log Message:", logMessage);
-
-        // Call the deleteOldLogs function to remove logs from two days ago
         try {
-            await deleteOldLogs(bucketName);
-        } catch (error) {
-            console.error("Failed to delete old logs:", error);
-        }
+            const user = req?.user ? req?.user?.username : 'Anonymous';
 
-        // Only append logs if a valid log message is created
-        if (logMessage) {
-            try {
-                await appendLogToS3(bucketName, filename, logMessage);
-            } catch (error) {
-                console.error("Failed to upload log:", error);
+            // Convert to IST (UTC+5:30)
+            const currentDate = new Date();
+            const istDate = new Date(currentDate.getTime() + 5.5 * 60 * 60 * 1000); // Offset by 5 hours and 30 minutes
+            const timestamp = istDate.toISOString().replace('T', ' ').split('.')[0]; // Format timestamp without milliseconds
+
+            const bucketName = "vehicledealership";
+            const filename = `logs/${timestamp.split(" ")[0]}.csv`; // Using date portion only
+
+            let logMessage = '';
+            if (req.method === 'POST' && req.path.includes('/details')) {
+                const vehicleNumber = req.body.registernumber || 'Unknown';
+                logMessage = `${timestamp} : ${user} added a vehicle with number: ${vehicleNumber}`;
+            } else if (req.method === 'POST' && req.path.includes('/maintainance')) {
+                const vehicleNumber = req.body.registernumber || 'Unknown';
+                logMessage = `${timestamp} : ${user} added maintenance for vehicle number: ${vehicleNumber}`;
+            } else if (req.method === 'POST' && req.path.includes('/installments')) {
+                const vehicleNumber = req.body.registernumber || 'Unknown';
+                logMessage = `${timestamp} : ${user} added an installment for vehicle number: ${vehicleNumber}`;
+            } else if (req.method === 'DELETE' && req.path.includes('/delete/car')) {
+                const vehicleNumber = req.query.deletedID || 'Unknown';
+                logMessage = `${timestamp} : ${user} deleted vehicle with vehicle number: ${vehicleNumber}`;
+            } else if (req.method === 'POST' && req.path.includes('/customer')) {
+                logMessage = `${timestamp} : ${user} added Customer query`;
+            } else if (req.method === 'DELETE' && req.path.includes('customer')) {
+                const vehicleNumber = req.body.registernumber || 'Unknown';
+                logMessage = `${timestamp} : ${user} deleted Customer query`;
+            } else if (req.method === 'POST' && req.path.includes('/edit-fields')) {
+                const vehicleNumber = req.body.registernumber || 'Unknown';
+                logMessage = `${timestamp} : ${user} edited fields for vehicle number: ${vehicleNumber}`;
+            } else if (req.method === 'POST' && req.path.includes('/miscellaneous-costs/add')) {
+                logMessage = `${timestamp} : ${user} added miscellaneous costs`;
+            } else if (req.method === 'POST' && req.path.includes('/dashboard/sell-car')) {
+                const vehicleNumber = req.body.carID || 'Unknown';
+                logMessage = `${timestamp} : ${user} sold vehicle with vehicle number: ${vehicleNumber}`;
+            } else if (req.method === 'POST' && req.path.includes('/dashboard/delete-notice')) {
+                logMessage = `${timestamp} : ${user} deleted notice image`;
+            } else if (req.method === 'POST' && req.path.includes('/accountDetails')) {
+                logMessage = `${timestamp} : ${user} added an investment`;
+            } else if (req.method === 'POST' && req.path === 'Description') {
+                logMessage = `${timestamp} : ${user} added documents`;
             }
-        }
 
-        next(); // Ensure next() is always called, even if there's no log message
+            // Call the deleteOldLogs function to remove logs from two days ago
+            try {
+                await deleteOldLogs(bucketName);
+            } catch (error) {
+                console.error("Failed to delete old logs:", error);
+            }
+
+            // Append log to S3 if a valid log message exists
+            if (logMessage) {
+                try {
+                    await appendLogToS3(bucketName, filename, logMessage);
+                } catch (error) {
+                    console.error("Failed to upload log:", error);
+                }
+            }
+        } catch (error) {
+            console.error("Unexpected error in logResReq middleware:", error);
+        } finally {
+            next(); // Ensure next() is called even if there are errors
+        }
     };
 }
+
 
 module.exports = logResReq;

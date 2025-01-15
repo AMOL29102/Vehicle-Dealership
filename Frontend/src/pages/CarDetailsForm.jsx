@@ -25,6 +25,11 @@ function AdminForm() {
   const [showOwnerFields, setShowOwnerFields] = useState(false);
   const [onHomePageDisplay, setOnHomePageDisplay] = useState(false);
 
+  const [fitness_upto_date, setfitness_upto_date] = useState(""); // for fitness_upto_date
+  const [registration_date, setregistration_date] = useState(""); // for registration_date
+  const [description, setDescription] = useState(""); // for description
+  const [kilometers, setKilometers] = useState(0); // for kilometers
+
   const [vehicleType, setVehicleType] = useState("");
   const [uploading, setUploading] = useState(false);
   const [images, setImages] = useState([]);
@@ -59,7 +64,7 @@ function AdminForm() {
   };
 
   const handleUpload = async () => {
-    setUploading(true);
+    // setUploading(true);
 
     try {
       // Generate the S3 upload URL for the display image
@@ -76,20 +81,49 @@ function AdminForm() {
       // Handle other image uploads if necessary (similar to DisplayImage)
       for (let i = 0; i < images.length; i++) {
         const image = images[i];
-        const imageFileName = `${registernumber}/InventoryVehicleImages/${
-          i + 1
-        }`;
+        const imageFileName = `${registernumber}/InventoryVehicleImages/${i + 1}`;
         const imageUploadURL = await getUploadURL(image, imageFileName);
         await uploadToS3(imageUploadURL, image);
       }
 
-      setUploading(false);
+      // setUploading(false);
       return true;
     } catch (error) {
-      setUploading(false);
+      // setUploading(false);
       throw error;
     }
   };
+
+
+  const resetState = () => {
+    setVehicleName("");
+    setBrandName("");
+    setregisternumber("");
+    setInsuranceCompany("");
+    setPolicyNumber("");
+    setPolicyTenure("");
+    setOwnerName("");
+    setOwnerPhone("");
+    setOwnerEmail("");
+    setOwnerAddress("");
+    setVehicleColor("");
+    setVehicleSellPrice("");
+    setInsuranceStartDate("");
+    setInsuranceEndDate("");
+    setShowInsuranceFields(false);
+    setShowOwnerFields(false);
+    setOnHomePageDisplay(false);
+    setfitness_upto_date("");
+    setregistration_date("");
+    setDescription("");
+    setKilometers(0);
+    setVehicleType("");
+    setUploading(false);
+    setImages([]);
+    setDisplayImage(null);
+    setFuel("");
+  };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -130,6 +164,10 @@ function AdminForm() {
           showInsuranceFields,
           showOwnerFields,
           onhomepage: onHomePageDisplay,
+          fitness_upto_date,
+          registration_date,
+          description,
+          kilometers,
         },
         {
           headers: {
@@ -139,7 +177,8 @@ function AdminForm() {
       );
 
       toast.success("Vehicle details added successfully!");
-      navigate("/dashboard");
+      resetState();
+      // navigate("/dashboard");
     } catch (error) {
       if (error.response && error.response.status == 400) {
         // Display error message in toast
@@ -275,11 +314,11 @@ function AdminForm() {
             </select>
           </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-4">
+          <div>
             <div>
               <label
-                htmlFor="buyPrice"
+                htmlFor="sellPrice"
                 className="block text-gray-700 text-sm font-bold mb-2"
               >
                 Vehicle Selling Price
@@ -320,19 +359,91 @@ function AdminForm() {
               <input type="hidden" id="vehicleBuyPrice" value={vehicleBuyPrice} onChange={(e) => setVehicleBuyPrice(0)} />
             )}
           </div>
-          
+
         </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-4">
+
+          <div>
+            <label
+              htmlFor="kilometers"
+              className="block text-gray-700 text-sm font-bold mb-2"
+            >
+              Kilometers
+            </label>
+            <input
+              type="number"
+              id="kilometers"
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              value={kilometers}
+              onChange={(e) =>
+                setKilometers(Math.max(0, e.target.value))
+              } // Prevent negative input
+            />
+
+          </div>
+
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-4">
+
+          <div>
+            <label
+              htmlFor="fitness_upto_date"
+              className="block text-gray-700 text-sm font-bold mb-2"
+            >
+              Fitness Upto Date
+            </label>
+            <input
+              type="date"
+              id="fitness_upto_date"
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              value={fitness_upto_date}
+              onChange={(e) => setfitness_upto_date(e.target.value)}
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="registration_date"
+              className="block text-gray-700 text-sm font-bold mb-2"
+            >
+              Registration Date
+            </label>
+            <input
+              type="date"
+              id="registration_date"
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              value={registration_date}
+              onChange={(e) => setregistration_date(e.target.value)}
+            />
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div>
             <label
+              htmlFor="description"
+              className="block text-gray-700 text-lg font-bold mb-2"
+            >
+              Description
+            </label>
+            <textarea
+              id="description"
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            />
+          </div>
+
+          <div>
+            <label
               htmlFor="onHomePageDisplay"
-              className="block text-gray-700 text-sm font-bold mb-2"
+              className="block text-gray-700 text-lg font-bold mb-2"
             >
               On Home Page Display
             </label>
             <select
               id="onHomePageDisplay"
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="shadow appearance-none border rounded w-full py-4 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               value={onHomePageDisplay}
               onChange={(e) =>
                 setOnHomePageDisplay(e.target.value == "true" ? true : false)
@@ -580,9 +691,8 @@ function AdminForm() {
         </div>
         <button
           type="submit"
-          className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ${
-            uploading ? "opacity-50 cursor-not-allowed" : ""
-          }`}
+          className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ${uploading ? "opacity-50 cursor-not-allowed" : ""
+            }`}
           disabled={uploading}
         >
           {uploading ? "Uploading..." : "Submit"}

@@ -102,7 +102,7 @@ function Login() {
                     <p>User Login</p>
                 </div>
                 <div className='mb-4 sm:mb-6'>
-                    <label className='block mb-2 text-gray-700 font-medium'>USERNAME:</label>
+                    <label className='block mb-2 text-gray-700 font-medium'>USER ID :</label>
                     <input
                         type="text"
                         name="username"

@@ -17,6 +17,8 @@ export default function Installment({ carID, isAdmin, soldStatus }) {
   const [description, setDescription] = useState("");
   const [paymentMode, setPaymentMode] = useState("");
   const [accountPaidTo, setAccountPaidTo] = useState("");
+  const [totalInstallmentsAmount, setTotalInstallmentsAmount] = useState(0);
+
   // const [isAdmin, setIsAdmin] = useState(false);
 
   const fetchCarDetails = async () => {
@@ -52,7 +54,8 @@ export default function Installment({ carID, isAdmin, soldStatus }) {
         },
         params: { registernumber: carID },
       });
-      setInstallments(response.data);
+      setInstallments(response.data.installments);
+      setTotalInstallmentsAmount(response.data.totalAmount);
     } catch (err) {
       // setError("Error fetching installment details");
       console.error(err);
@@ -196,39 +199,71 @@ export default function Installment({ carID, isAdmin, soldStatus }) {
               className="bg-white p-6 rounded-lg mt-[-4%]"
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-4">
+                <div className="space-y-2">
+                  <hr />
+
                   <p>
                     <span className="font-semibold">Buyer:</span>{" "}
                     {car.owner_name}
                   </p>
+                  <hr />
+
                   <p>
                     <span className="font-semibold">Selling Price:</span> ₹
                     {car.selling_price}
                   </p>
+                  <hr />
+
                   <p>
                     <span className="font-semibold">Contact No:</span>{" "}
                     {car.contact_no}
                   </p>
+                  <hr />
                   <p>
                     <span className="font-semibold">Commission:</span> ₹
                     {car.commission}
                   </p>
+                  <hr />
+
+                  <div className="flex">
+                    <p>
+                      <span className="font-semibold">Down Payment:</span> ₹
+                      {car.down_payment}
+                    </p>
+
+                    <p>
+                      <span className="font-semibold">Installments Total:</span> ₹
+                      {totalInstallmentsAmount}
+                    </p>
+                  </div>
+                  <hr />
+
                   <p>
-                    <span className="font-semibold">Down Payment:</span> ₹
-                    {car.down_payment}
+                    <span className="font-semibold">Total Amount Received Till Date:</span> ₹
+                    {parseFloat(car.down_payment ? car.down_payment : "0") + parseFloat(totalInstallmentAmount ? totalInstallmentAmount : "0")}
                   </p>
+                  <hr />
+                  <hr />
+
+
                   <p>
                     <span className="font-semibold">Description:</span>{" "}
                     {car.description}
                   </p>
+                  <hr />
+
                   <p>
                     <span className="font-semibold">Payment Mode:</span>{" "}
                     {car.payment_mode}
                   </p>
+                  <hr />
+
                   <p>
                     <span className="font-semibold">Account Paid To:</span>{" "}
                     {car.account_paid_to}
                   </p>
+                  <hr />
+
                 </div>
 
                 <div className="space-y-4">

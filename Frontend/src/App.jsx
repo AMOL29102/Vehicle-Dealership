@@ -28,6 +28,8 @@ import DocumentView from "./components/DocumentView";
 import ContactUs from "./pages/ContactUs";
 import MonthlyAccountDetails from "./pages/MonthlyAccountDetails";
 import ActiveAccounts from "./pages/ActiveAccounts";
+import ChangePassword from "./pages/ChangePassword";
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -77,7 +79,7 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: "/AddEmployee",
+    path: "/dashboard/AddEmployee",
     element: (
       <ProtectedRoute>
         <ProtectedUserRoute requiredRoles={["admin"]}>
@@ -92,7 +94,7 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: "/AddDriver",
+    path: "/dashboard/AddDriver",
     element: (
       <ProtectedRoute>
         <ProtectedUserRoute requiredRoles={["admin", "employee"]}>
@@ -276,12 +278,25 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: "/ActiveAccounts",
+    path: "/dashboard/ActiveAccounts",
     element: (
       <ProtectedRoute>
         <ProtectedUserRoute requiredRoles={["admin"]}>
           <Layout>
             <ActiveAccounts/>
+          </Layout>
+        </ProtectedUserRoute>
+
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/dashboard/ChangePassword",
+    element: (
+      <ProtectedRoute>
+        <ProtectedUserRoute requiredRoles={["admin"]}>
+          <Layout>
+            <ChangePassword/>
           </Layout>
         </ProtectedUserRoute>
 

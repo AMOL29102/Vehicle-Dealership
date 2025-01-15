@@ -28,6 +28,10 @@ const EditVehicleDetailsForm = () => {
             owneremail: "",
             owneraddress: "",
             onhomepage: "",
+            fitness_upto_date: "",
+            registration_date: "",
+            description: "",
+            kilometers: ""
         },
     });
 
@@ -49,7 +53,11 @@ const EditVehicleDetailsForm = () => {
         ownerphone: false,
         owneremail: false,
         owneraddress: false,
-        onhomepage: false
+        onhomepage: false,
+        fitness_upto_date: false,
+        registration_date: false,
+        description: false,
+        kilometers: false,
     });
 
     const [inputValue, setInputValue] = useState("");
@@ -77,6 +85,10 @@ const EditVehicleDetailsForm = () => {
                         vehiclebuyprice: car.vehiclebuyprice,
                         vehiclesellprice: car.vehiclesellprice,
                         onhomepage: car.onhomepage,
+                        fitness_upto_date: car.fitness_upto_date,
+                        registration_date: car.registration_date,
+                        description: car.description,
+                        kilometers: car.kilometers,
 
                         insurancecompany: insurance?.insurancecompany,
                         insurancenumber: insurance?.insurancenumber,
@@ -158,14 +170,14 @@ const EditVehicleDetailsForm = () => {
     const token = localStorage.getItem('authToken')
     let field;
     let decodedToken;
-      if (token) {
+    if (token) {
         try {
-          decodedToken = jwtDecode(token);
-          console.log(decodedToken);
+            decodedToken = jwtDecode(token);
+            console.log(decodedToken);
         } catch (error) {
-          console.error("Invalid token", error);
+            console.error("Invalid token", error);
         }
-      }
+    }
     return (
         <div className="container mx-auto pl-16 pr-16 pb-16 pt-8">
             <div className="mb-4">
@@ -349,29 +361,29 @@ const EditVehicleDetailsForm = () => {
 
 
                     <div className="w-full md:w-[49%]">
-                            {/* {console.log("hi",decodedToken.isAdmin)} */}
-                     {decodedToken.isAdmin &&<> <label htmlFor="vehiclebuyprice" className="block text-gray-700 text-sm font-bold mb-2">Vehicle Buying Price</label>
-                        <div className="relative w-full">
-                            <input
-                                type="text"
-                                id={"vehiclebuyprice"}
-                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                value={editableFields.vehiclebuyprice ? inputValue : vehicleData.vehicleDetails.vehiclebuyprice}
-                                readOnly={!editableFields.vehiclebuyprice}
-                                onChange={handleInputChange}
-                            />
-                            <button className="absolute right-2 top-1/2 transform -translate-y-1/2" onClick={() => setEditableFields({ ...editableFields, vehiclebuyprice: true })}>
-                                <i className="fas fa-pencil-alt"></i>
-                            </button>
+                        {/* {console.log("hi",decodedToken.isAdmin)} */}
+                        {decodedToken.isAdmin && <> <label htmlFor="vehiclebuyprice" className="block text-gray-700 text-sm font-bold mb-2">Vehicle Buying Price</label>
+                            <div className="relative w-full">
+                                <input
+                                    type="text"
+                                    id={"vehiclebuyprice"}
+                                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                    value={editableFields.vehiclebuyprice ? inputValue : vehicleData.vehicleDetails.vehiclebuyprice}
+                                    readOnly={!editableFields.vehiclebuyprice}
+                                    onChange={handleInputChange}
+                                />
+                                <button className="absolute right-2 top-1/2 transform -translate-y-1/2" onClick={() => setEditableFields({ ...editableFields, vehiclebuyprice: true })}>
+                                    <i className="fas fa-pencil-alt"></i>
+                                </button>
 
-                            {editableFields.vehiclebuyprice && (
-                                <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex space-x-2">
-                                    <button onClick={() => handleVehicleDetailsEdit(inputValue, "vehiclebuyprice")} className={`bg-green-500 text-white py-1 px-3 rounded ${wait ? 'opacity-50 cursor-not-allowed' : ''}`}>{wait ? "wait..." : "OK"}</button>
-                                    <button onClick={() => handleCancelEdit("vehiclebuyprice")} className={`bg-red-500 text-white py-1 px-3 rounded ${wait ? 'opacity-50 cursor-not-allowed' : ''}`}>CANCEL</button>
-                                </div>
-                            )}
-                        </div>
-                        </>  }
+                                {editableFields.vehiclebuyprice && (
+                                    <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex space-x-2">
+                                        <button onClick={() => handleVehicleDetailsEdit(inputValue, "vehiclebuyprice")} className={`bg-green-500 text-white py-1 px-3 rounded ${wait ? 'opacity-50 cursor-not-allowed' : ''}`}>{wait ? "wait..." : "OK"}</button>
+                                        <button onClick={() => handleCancelEdit("vehiclebuyprice")} className={`bg-red-500 text-white py-1 px-3 rounded ${wait ? 'opacity-50 cursor-not-allowed' : ''}`}>CANCEL</button>
+                                    </div>
+                                )}
+                            </div>
+                        </>}
                     </div>
 
 
@@ -402,9 +414,217 @@ const EditVehicleDetailsForm = () => {
 
 
                     <div className="w-full md:w-[49%]">
+                        <label
+                            htmlFor="kilometers"
+                            className="block text-gray-700 text-sm font-bold mb-2"
+                        >
+                            Kilometers
+                        </label>
+                        <div className="relative w-full">
+                            <input
+                                type="number"
+                                id="kilometers"
+                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                value={
+                                    editableFields.kilometers
+                                        ? inputValue
+                                        : vehicleData.vehicleDetails.kilometers
+                                }
+                                readOnly={!editableFields.kilometers}
+                                onChange={handleInputChange}
+                            />
+                            <button
+                                className="absolute right-2 top-1/2 transform -translate-y-1/2"
+                                onClick={() =>
+                                    setEditableFields({ ...editableFields, kilometers: true })
+                                }
+                            >
+                                <i className="fas fa-pencil-alt"></i>
+                            </button>
+
+                            {editableFields.kilometers && (
+                                <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex space-x-2">
+                                    <button
+                                        onClick={() =>
+                                            handleVehicleDetailsEdit(inputValue, "kilometers")
+                                        }
+                                        className={`bg-green-500 text-white py-1 px-3 rounded ${wait ? "opacity-50 cursor-not-allowed" : ""
+                                            }`}
+                                    >
+                                        {wait ? "wait..." : "OK"}
+                                    </button>
+                                    <button
+                                        onClick={() => handleCancelEdit("kilometers")}
+                                        className={`bg-red-500 text-white py-1 px-3 rounded ${wait ? "opacity-50 cursor-not-allowed" : ""
+                                            }`}
+                                    >
+                                        CANCEL
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="w-full md:w-[49%]">
+
+                        <label
+                            htmlFor="fitness_upto_date"
+                            className="block text-gray-700 text-sm font-bold mb-2"
+                        >
+                            Fitness Upto Date
+                        </label>
+                        <div className="relative w-full">
+                            <input
+                                type="date"
+                                id="fitness_upto_date"
+                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                value={
+                                    editableFields.fitness_upto_date
+                                        ? inputValue
+                                        : vehicleData.vehicleDetails.fitness_upto_date?.slice(0, 10)
+                                }
+                                readOnly={!editableFields.fitness_upto_date}
+                                onChange={handleInputChange}
+                            />
+                            <button
+                                className="absolute right-8 top-1/2 transform -translate-y-1/2 flex space-x-2"
+                                onClick={() =>
+                                    setEditableFields({ ...editableFields, fitness_upto_date: true })
+                                }
+                            >
+                                <i className="fas fa-pencil-alt"></i>
+                            </button>
+
+                            {editableFields.fitness_upto_date && (
+                                <div className="absolute right-8 top-1/2 transform -translate-y-1/2 flex space-x-2">
+                                    <button
+                                        onClick={() =>
+                                            handleVehicleDetailsEdit(inputValue, "fitness_upto_date")
+                                        }
+                                        className={`bg-green-500 text-white py-1 px-3 rounded ${wait ? "opacity-50 cursor-not-allowed" : ""
+                                            }`}
+                                    >
+                                        {wait ? "wait..." : "OK"}
+                                    </button>
+                                    <button
+                                        onClick={() => handleCancelEdit("fitness_upto_date")}
+                                        className={`bg-red-500 text-white py-1 px-3 rounded ${wait ? "opacity-50 cursor-not-allowed" : ""
+                                            }`}
+                                    >
+                                        CANCEL
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="w-full md:w-[49%]">
+                        <label
+                            htmlFor="registration_date"
+                            className="block text-gray-700 text-sm font-bold mb-2"
+                        >
+                            Registration Date
+                        </label>
+                        <div className="relative w-full">
+                            <input
+                                type="date"
+                                id="registration_date"
+                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                value={
+                                    editableFields.registration_date
+                                        ? inputValue
+                                        : vehicleData.vehicleDetails.registration_date?.slice(0, 10)
+                                }
+
+                                readOnly={!editableFields.registration_date}
+                                onChange={handleInputChange}
+                            />
+                            <button
+                                className="absolute right-8 top-1/2 transform -translate-y-1/2 flex space-x-2"
+                                onClick={() =>
+                                    setEditableFields({ ...editableFields, registration_date: true })
+                                }
+                            >
+                                <i className="fas fa-pencil-alt"></i>
+                            </button>
+
+                            {editableFields.registration_date && (
+                                <div className="absolute right-8 top-1/2 transform -translate-y-1/2 flex space-x-2">
+                                    <button
+                                        onClick={() =>
+                                            handleVehicleDetailsEdit(inputValue, "registration_date")
+                                        }
+                                        className={`bg-green-500 text-white py-1 px-3 rounded ${wait ? "opacity-50 cursor-not-allowed" : ""
+                                            }`}
+                                    >
+                                        {wait ? "wait..." : "OK"}
+                                    </button>
+                                    <button
+                                        onClick={() => handleCancelEdit("registration_date")}
+                                        className={`bg-red-500 text-white py-1 px-3 rounded ${wait ? "opacity-50 cursor-not-allowed" : ""
+                                            }`}
+                                    >
+                                        CANCEL
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="w-full md:w-[49%]">
+                        <label
+                            htmlFor="description"
+                            className="block text-gray-700 text-sm font-bold mb-2"
+                        >
+                            Description
+                        </label>
+                        <div className="relative w-full">
+                            <textarea
+                                id="description"
+                                rows="4"
+                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                value={editableFields.description ? inputValue : vehicleData.vehicleDetails.description}
+                                readOnly={!editableFields.description}
+                                onChange={handleInputChange}
+                            />
+                            <button
+                                className="absolute right-2 top-1/2 transform -translate-y-1/2"
+                                onClick={() => {
+                                    // Set inputValue to current description when edit button is clicked
+                                    setInputValue(vehicleData.vehicleDetails.description);
+                                    setEditableFields({ ...editableFields, description: true });
+                                }}
+                            >
+                                <i className="fas fa-pencil-alt"></i>
+                            </button>
+
+                            {editableFields.description && (
+                                <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex space-x-2">
+                                    <button
+                                        onClick={() =>
+                                            handleVehicleDetailsEdit(inputValue, "description")
+                                        }
+                                        className={`bg-green-500 text-white py-1 px-3 rounded ${wait ? "opacity-50 cursor-not-allowed" : ""}`}
+                                    >
+                                        {wait ? "wait..." : "OK"}
+                                    </button>
+                                    <button
+                                        onClick={() => handleCancelEdit("description")}
+                                        className={`bg-red-500 text-white py-1 px-3 rounded ${wait ? "opacity-50 cursor-not-allowed" : ""}`}
+                                    >
+                                        CANCEL
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+
+
+                    {/* <div className="w-full md:w-[49%]">
                         <label htmlFor="onhomepage" className="block text-gray-700 text-sm font-bold mb-2">On Home Page</label>
                         <div className="relative w-full">
-                            {/* Dropdown for Vehicle Names */}
+                            
                             {editableFields.onhomepage ? (
                                 <select
                                     id={"onhomepage"}
@@ -413,9 +633,6 @@ const EditVehicleDetailsForm = () => {
                                     onChange={(e) => setInputValue(e.target.value)}
                                 >
                                     <option value="" disabled>Select Display Options</option>
-                                    {/* {displayOptions?.map((option, index) => (
-                                        <option key={index} value={option}>{option}</option>
-                                    ))} */}
                                     <option value="true">Yes</option>
                                     <option value="false">No</option>
                                 </select>
@@ -429,15 +646,13 @@ const EditVehicleDetailsForm = () => {
                                 />
                             )}
 
-                            {/* Edit Button */}
+                           
                             <button
                                 className="absolute right-2 top-1/2 transform -translate-y-1/2"
                                 onClick={() => setEditableFields({ ...editableFields, onhomepage: true })}
                             >
                                 <i className="fas fa-pencil-alt"></i>
                             </button>
-
-                            {/* {wait ? "wait..." : "OK"} and Cancel Buttons */}
                             {editableFields.onhomepage && (
                                 <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex space-x-2">
                                     <button onClick={() => handleVehicleDetailsEdit(inputValue, "onhomepage")} className={`bg-green-500 text-white py-1 px-3 rounded ${wait ? 'opacity-50 cursor-not-allowed' : ''}`}>{wait ? "wait..." : "OK"}</button>
@@ -445,7 +660,7 @@ const EditVehicleDetailsForm = () => {
                                 </div>
                             )}
                         </div>
-                    </div>
+                    </div> */}
 
                 </div>
             </div>
@@ -551,8 +766,12 @@ const EditVehicleDetailsForm = () => {
 
                             {editableFields.insuranceenddate && (
                                 <div className="absolute right-8 top-1/2 transform -translate-y-1/2 flex space-x-2">
-                                    <button onClick={() => handleVehicleDetailsEdit(inputValue, "insuranceenddate")} className={`bg-green-500 text-white py-1 px-3 rounded ${wait ? 'opacity-50 cursor-not-allowed' : ''}`}>{wait ? "wait..." : "OK"}</button>
-                                    <button onClick={() => handleCancelEdit("insuranceenddate")} className={`bg-red-500 text-white py-1 px-3 rounded ${wait ? 'opacity-50 cursor-not-allowed' : ''}`}>CANCEL</button>
+                                    <button onClick={() => handleVehicleDetailsEdit(inputValue, "insuranceenddate")} className={`bg-green-500 text-white py-1 px-3 rounded ${wait ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                                        {wait ? "wait..." : "OK"}
+                                    </button>
+                                    <button onClick={() => handleCancelEdit("insuranceenddate")} className={`bg-red-500 text-white py-1 px-3 rounded ${wait ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                                        CANCEL
+                                    </button>
                                 </div>
                             )}
                         </div>

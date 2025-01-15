@@ -78,21 +78,21 @@ async function handleDashboard(req, res) {
     }
 }
 
-async function handlepushtoHomepage(req, res) {
-    const onHomePage = req.body;
-    try {
-        await db.query(`UPDATE TABLE cardetails SET onhompage = $1`, [onHomePage]);
+// async function handlepushtoHomepage(req, res) {
+//     const onHomePage = req.body;
+//     try {
+//         await db.query(`UPDATE cardetails SET onhompage = $1`, [onHomePage]);
 
-        if (onHomePage == false) {
-            return res.status(200).send({ message: 'Successfully removed from homepage' });
-        }
-        return res.status(200).send({ message: 'Successfully displayed on homepage' });
+//         if (onHomePage == false) {
+//             return res.status(200).send({ message: 'Successfully removed from homepage' });
+//         }
+//         return res.status(200).send({ message: 'Successfully displayed on homepage' });
 
 
-    } catch (error) {
-        console.error("Error occurred while loading car details:", error);
-        return res.status(500).send("Error occurred while loading the page");
-    }
-}
+//     } catch (error) {
+//         console.error("Error occurred while loading car details ++ :", error);
+//         return res.status(500).send("Error occurred while loading the page");
+//     }
+// }
 
-module.exports = { handleDashboard, handlepushtoHomepage };
+module.exports = { handleDashboard };

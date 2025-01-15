@@ -51,7 +51,7 @@ async function handleGetMaintainanceDetails(req, res) {
             description: detail.maintainancedetails,
             price: detail.maintainancecost,
             maintainanceDate: detail.maintainancedate,
-            role: detail.maintainancedone,
+            username: detail.maintainancedone,
             maintainanceReceipt: maintainanceDocs[index], // Use index to get corresponding element from maintainanceDocs
         }));
 
@@ -70,12 +70,12 @@ async function handleGetMaintainanceDetails(req, res) {
 }
 
 async function handlePostMaintainanceDetails(req, res) {
-    const { registernumber, description, price, role, maintainanceDate } = req.body;
+    const { registernumber, description, price, username, maintainanceDate } = req.body;
     // console.log(req.body);
     // console.log(req.user); // Check if the user is correctly set
 
     // Check for missing fields
-    if (!registernumber || !description || !price || !maintainanceDate || !role) {
+    if (!registernumber || !description || !price || !maintainanceDate || !username) {
         return res.status(400).send("Enter all the details correctly");
     }
 
@@ -86,7 +86,7 @@ async function handlePostMaintainanceDetails(req, res) {
         let nextIndex = 0; // Start with 0 if no records exist
 
         // Query to get the highest maintenance number or default to 0 if it doesn't exist
-        const qr = `SELECT COALESCE(MAX(maintainanceNumber), 0) AS maxNumber FROM maintainancedetails WHERE registernumber = $1`;
+        const qr = `SELECT COALESCE(MAX(maintainancenumber), 0) AS maxnumber FROM maintainancedetails WHERE registernumber = $1`;
         const val = [registernumber];
         const result1 = await db.query(qr, val);
 
@@ -96,14 +96,14 @@ async function handlePostMaintainanceDetails(req, res) {
 
         // Insert into the database
         const query = `INSERT INTO maintainancedetails 
-                        (registernumber, maintainancecost, maintainancedetails, maintainancedate, maintainancedone,maintainanceNumber)
+                        (registernumber, maintainancecost, maintainancedetails, maintainancedate, maintainancedone,maintainancenumber)
                         VALUES ($1, $2, $3, $4, $5, $6)`;
         const values = [
             registernumber,
             price,
             description,
             maintainanceDate,
-            role,
+            username,
             nextIndex
         ];
         const result = await db.query(query, values);
@@ -117,7 +117,9 @@ async function handlePostMaintainanceDetails(req, res) {
 
     } catch (error) {
         console.log(error);
-        return res.status(500).send("Internal Server Error");
+        console.log(error.message);
+
+        return res.status(500).send(`Internal Server Error : ${error.message}`);
     }
 }
 

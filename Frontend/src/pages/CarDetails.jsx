@@ -58,14 +58,15 @@ function CarDetails() {
               className="rounded-t-lg"
             >
               {carData.images?.map((image, index) => (
-                <div key={index}>
+                <div key={index} className="flex justify-center items-center overflow-hidden">
                   <img
                     src={image}  // Correctly use the image URL
                     alt={`Car ${carData.car.carname}`}
-                    className="w-full h-auto rounded-t-lg"
+                    className="max-h-[20rem] rounded-t-lg object-contain"
                   />
                 </div>
               ))}
+
             </Carousel>
           </div>
 
@@ -73,6 +74,10 @@ function CarDetails() {
             <h2 className="text-2xl font-bold mb-4 text-center">Vehicle Details</h2>
             <h3 className="text-lg font-semibold mb-2">Vehicle Information</h3>
             <ul className="space-y-2">
+              <li className="flex justify-between items-center border-b pb-2">
+                <span className="font-semibold">Vehicle Number :</span>
+                <span>{carData.car.registernumber}</span>
+              </li>
               <li className="flex justify-between items-center border-b pb-2">
                 <span className="font-semibold">Vehicle Name:</span>
                 <span>{carData.car.carname}</span>
@@ -90,9 +95,29 @@ function CarDetails() {
                 <span>{carData.car.carcolor}</span>
               </li>
               <li className="flex justify-between items-center border-b pb-2">
+                <span className="font-semibold">Kilometers :</span>
+                <span>{carData.car.kilometers}</span>
+              </li>
+              <li className="flex justify-between items-center border-b pb-2">
+                <span className="font-semibold">Fitness Upto :</span>
+                <span>{(new Date(carData.car.fitness_upto_date)).toLocaleDateString('en-GB')}</span>
+              </li>
+              <li className="flex justify-between items-center border-b pb-2">
+                <span className="font-semibold">Registration Date :</span>
+                <span>{(new Date(carData.car.registration_date)).toLocaleDateString('en-GB')}</span>
+              </li>
+              <li className="flex justify-between items-center border-b pb-2">
                 <span className="font-semibold">Price:</span>
                 <span className="text-blue-500">₹ {carData.car.vehiclesellprice}</span>
               </li>
+              <li className="flex justify-between items-start border-b pb-2">
+                <span className="font-semibold">Description:</span>
+                <div className="ml-2 w-full">
+                  <p className="break-words whitespace-normal">{carData.car.description}</p>
+                </div>
+              </li>
+
+
             </ul>
 
             {/* Insurance Section */}
@@ -109,6 +134,10 @@ function CarDetails() {
                 <li className="flex justify-between items-center border-b pb-2">
                   <span className="font-semibold">Policy Tenure:</span>
                   <span>{carData.insurance.insurancetenure} years</span>
+                </li>
+                <li className="flex justify-between items-center border-b pb-2">
+                  <span className="font-semibold">Insurance Upto:</span>
+                  <span>{(new Date(carData.insurance.insuranceenddate)).toLocaleDateString('en-GB')}</span>
                 </li>
               </ul>
             </>

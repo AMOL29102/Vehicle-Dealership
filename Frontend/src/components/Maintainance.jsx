@@ -38,20 +38,6 @@ export function Maintainance({ registernumber, isDriver, isEmployee, isAdmin, ve
         })
     }
 
-    function fetchToken() {
-        const token = localStorage.getItem("authToken");
-        let decodedToken;
-        if (token) {
-            try {
-                decodedToken = jwtDecode(token);
-                console.log(decodedToken);
-            } catch (error) {
-                console.error("Invalid token", error);
-            }
-        }
-        console.log(decodedToken);
-        setDecodedToken(decodedToken);
-    }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -59,21 +45,29 @@ export function Maintainance({ registernumber, isDriver, isEmployee, isAdmin, ve
         try {
             setAdding(true);
 
-            fetchToken();
+            const token = localStorage.getItem("authToken");
+            console.log("++++++ " + token)
+            let decodedToken;
+            if (token) {
+                try {
+                    decodedToken = jwtDecode(token);
+                    console.log("temppppp " + decodedToken);
+                } catch (error) {
+                    console.error("Invalid token", error);
+                }
+            }
 
 
-            let currRole = isDriver ? "driver" : isAdmin ? "admin" : isEmployee ? "employee" : "";
-            if (!currRole) currRole = role;
+            let username = decodedToken.username ? decodedToken.username : "Unkown";
 
-            // if(decodedToken)
-            // {
-            //     currRole += ` ${decodedToken.username}`;
-            // }
-            // console.log("CurrRole : "+currRole);
+            let userdesignation = decodedToken.isAdmin ? "Admin" : decodedToken.isEmployee ? "Employee" : decodedToken.isDriver ? "Driver" : "Unknown";
+            console.log("username : " + username);
+            console.log(decodedToken);
 
-            console.log(globalRegisterNumber, description, price, currRole, maintainanceDate)
+
+            console.log(globalRegisterNumber, description, price, username, userdesignation, maintainanceDate)
             const response = await axios.post('https://www.nikhilmotors.com/api/maintainance',
-                { registernumber: globalRegisterNumber, description, price, role: currRole, maintainanceDate },
+                { registernumber: globalRegisterNumber, description, price, username, maintainanceDate },
                 {
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem('authToken')}`
@@ -197,7 +191,9 @@ export function Maintainance({ registernumber, isDriver, isEmployee, isAdmin, ve
                                 maxLength="10"
                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                 value={inputValue}
-                                onChange={(e) => setInputValue(e.target.value)}
+                                onChange={(e) => setInputValue(e.target.value
+                                    .replace(/^\s+/, "")
+                                    .replace(/[a-z]/g, (char) => char.toUpperCase()))}
                             />
                         </div>
                         <button

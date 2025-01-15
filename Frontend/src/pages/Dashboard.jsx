@@ -30,9 +30,33 @@ const Dashboard = () => {
     Remaining_Balance: 0,
   });
   const [loading, setLoading] = useState(true);
+  const [wait, setWait] = useState(false);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  const handleToggle = async (carId, newValue) => {
+    try {
+      setWait(true);
+
+      const tablename = "cardetails";
+      const fieldToEdit = "onhomepage"
+      const response = await axios.post("https://www.nikhilmotors.com/api/edit-fields", {
+        tablename: tablename,
+        fieldToEdit: fieldToEdit,
+        newValue: newValue,
+        registernumber: carId
+      }, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('authToken')}`
+        }
+      });
+
+    } catch (error) {
+      console.log(error);
+    }
+    setWait(false);
   };
 
   const handleView = (url) => {
@@ -49,18 +73,27 @@ const Dashboard = () => {
 
   const addEmployee = (e) => {
     e.preventDefault();
-    navigate("/AddEmployee");
+    navigate("/dashboard/AddEmployee");
   };
 
   const addDriver = (e) => {
     e.preventDefault();
-    navigate("/AddDriver");
+    navigate("/dashboard/AddDriver");
   };
 
-  const activeIds = (e)=>{
+  const activeIds = (e) => {
     e.preventDefault();
-    navigate('/ActiveAccounts')
+    navigate('/dashboard/ActiveAccounts')
   }
+
+
+
+  const handleChangePass = (e) => {
+    e.preventDefault();
+    navigate('/dashboard/ChangePassword')
+  }
+
+
   const fetchTotalSellingPrice = async () => {
     try {
       const response = await axios.get(
@@ -214,7 +247,9 @@ const Dashboard = () => {
   useEffect(() => {
 
     fetchCarDetails();
-  }, [query]);
+  }, [query, wait]);
+
+
   useEffect(() => {
     setLoading(true);
     fetchTotalSellingPrice();
@@ -240,7 +275,7 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="bg-blue-100 flex flex-col lg:flex-row">
+    <div className={`bg-blue-100 flex flex-col lg:flex-row ${wait && "opacity-50 pointer-events-none"}`}>
       {/* {console.log("HI", username)} */}
       <div
         className={`${isSidebarOpen ? "block" : "hidden"
@@ -353,32 +388,38 @@ const Dashboard = () => {
             <span>Nikhil Motors</span>
           </div> */}
         </div>
-        <div className="ml-auto mb-3 flex space-x-4">
+        <div className="ml-auto mb-3 flex flex-wrap lg:flex-nowrap space-x-0 lg:space-x-4 space-y-3 lg:space-y-0">
           {userRole === "Admin" && (
             <>
               <button
                 onClick={addEmployee}
-                className="bg-blue-500 text-white px-4 py-2 rounded"
+                className="bg-blue-500 text-white px-4 py-2 rounded w-full lg:w-auto"
               >
                 Add Employee
               </button>
               <button
                 onClick={addDriver}
-                className="bg-green-500 text-white px-4 py-2 rounded"
+                className="bg-blue-500 text-white px-4 py-2 rounded w-full lg:w-auto"
               >
                 Add Driver
               </button>
               <button
                 onClick={downloadLogFile}
-                className="bg-green-500 text-white px-4 py-2 rounded"
+                className="bg-green-500 text-white px-4 py-2 rounded w-full lg:w-auto"
               >
                 Download Logs
               </button>
               <button
                 onClick={activeIds}
-                className="bg-green-500 text-white px-4 py-2 rounded"
+                className="bg-green-500 text-white px-4 py-2 rounded w-full lg:w-auto"
               >
-                Active IDs
+                Account IDs
+              </button>
+              <button
+                onClick={handleChangePass}
+                className="bg-yellow-400 text-white px-4 py-2 rounded w-full lg:w-auto"
+              >
+                Change Password
               </button>
             </>
           )}
@@ -386,14 +427,14 @@ const Dashboard = () => {
             <>
               <button
                 onClick={addDriver}
-                className="bg-green-500 text-white px-4 py-2 rounded"
+                className="bg-blue-500 text-white px-4 py-2 rounded w-full lg:w-auto"
               >
                 Add Driver
               </button>
             </>
           )}
-
         </div>
+
         <div
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-4"
         >
@@ -500,22 +541,40 @@ const Dashboard = () => {
                       <span
                         className={`px-2 py-1 rounded-full text-xs ${car.status === true
                           ? "bg-green-100 text-green-700"
-                          : "bg-yellow-100 text-yellow-700"
+                          : "bg-yellow-100 text-yellow-900"
                           }`}
                       >
                         {car.status === true ? "sold" : "Available"}
                       </span>
                     </td>
+
+
                     <td className="p-2">
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs ${car.onhomepage === true
-                          ? "bg-green-100 text-green-700"
-                          : "bg-red-100 text-yellow-700"
-                          }`}
-                      >
-                        {car.onhomepage === true ? "Yes" : "No"}
-                      </span>
+                      <div className="flex items-center">
+                        <button
+                          onClick={() => handleToggle(car.registernumber, !car.onhomepage)}
+                          className={`relative inline-flex h-6 w-12 items-center rounded-full transition-colors ${car.status
+                            ? "bg-gray-300 cursor-not-allowed"
+                            : car.onhomepage
+                              ? "bg-green-500"
+                              : "bg-red-500"
+                            }`}
+                          disabled={car.status}
+                        >
+                          <span
+                            className={`inline-block h-6 w-6 transform rounded-full bg-gray-100 transition-transform ${car.status
+                              ? "opacity-50"
+                              : car.onhomepage
+                                ? "translate-x-6"
+                                : "translate-x-0"
+                              }`}
+                          >
+                            {car.onhomepage && !car.status ? "Y" : "N"}
+                          </span>
+                        </button>
+                      </div>
                     </td>
+
                     <td className="p-2">
                       <button onClick={() => handleView(car.registernumber)}>
                         <i className={"fas fa-eye"}></i>

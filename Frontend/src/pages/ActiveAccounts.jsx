@@ -14,7 +14,7 @@ export default function ActiveAccounts() {
   const [error, setError] = useState("");
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [currentDelete, setCurrentDelete] = useState(null);
-    const navigate = useNavigate();
+  const navigate = useNavigate();
   useEffect(() => {
     const fetchAccounts = async () => {
       try {
@@ -59,6 +59,7 @@ export default function ActiveAccounts() {
 
     try {
       // Send the DELETE request to the server
+      setLoading(true);
       await axios.delete(`https://www.nikhilmotors.com/api/activeAccounts/deleteAccount`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("authToken")}`,
@@ -76,19 +77,20 @@ export default function ActiveAccounts() {
       }
 
       // Display success toast
-      toast.success("Deleted successfully!");
+      toast.success("Deleted successfully!", { position: "top-center", autoClose: 1000 });
     } catch (err) {
       // Display error toast if deletion fails
       toast.error("Failed to delete the account. Please try again later.");
     } finally {
       // Close the modal after the operation is completed
       closeModal();
+      setLoading(false);
     }
   };
 
-  if (loading) {
-    return <div className="text-center p-4">Loading...</div>;
-  }
+  // if (loading) {
+  //   return <div className="text-center p-4">Loading...</div>;
+  // }
 
   if (error) {
     return <div className="text-center p-4 text-red-500">{error}</div>;
@@ -105,7 +107,7 @@ export default function ActiveAccounts() {
         Back to Dashboard
       </button>
       <h1 className="text-2xl font-bold mb-4 mt-10">Active Accounts</h1>
-      <div className="flex flex-col sm:flex-row sm:space-x-4">
+      <div className={`flex flex-col sm:flex-row sm:space-x-4 ${loading ? "opacity-50" : ""}`}>
         {/* Employee Table */}
         <div className="w-full sm:w-1/2 p-2 mb-4 sm:mb-0">
           <h2 className="text-xl font-semibold mb-2">Employees</h2>
@@ -123,9 +125,8 @@ export default function ActiveAccounts() {
                 {employees.map((employee, index) => (
                   <tr
                     key={index}
-                    className={`${
-                      index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                    } hover:bg-gray-100`}
+                    className={`${index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                      } hover:bg-gray-100`}
                   >
                     <td className="border border-gray-300 px-4 py-2">
                       {employee.userid}
@@ -168,9 +169,8 @@ export default function ActiveAccounts() {
                 {drivers.map((driver, index) => (
                   <tr
                     key={index}
-                    className={`${
-                      index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                    } hover:bg-gray-100`}
+                    className={`${index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                      } hover:bg-gray-100`}
                   >
                     <td className="border border-gray-300 px-4 py-2">
                       {driver.userid}
@@ -217,7 +217,7 @@ export default function ActiveAccounts() {
             className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
             onClick={handleDelete}
           >
-            Yes, Delete
+            {loading ? "Loading..." : "Yes, Delete"}
           </button>
         </div>
       </Modal>
